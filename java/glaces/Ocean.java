@@ -15,6 +15,7 @@ public class Ocean {
     private int hauteur;
     private Iceberg2D[] tabIceberg;
     private Pingouin pingouin;
+    private Poisson[] poissons;
 
     /**
      * Construction
@@ -27,6 +28,11 @@ public class Ocean {
         tabIceberg[0] = new Iceberg2D(new Point(50, 50), new Point(90, 100));
         tabIceberg[1] = new Iceberg2D(new Point(170, 100), new Point(200, 260));
         this.pingouin = new Pingouin(20, new Point(this.largeur - 20, 0));
+
+        this.poissons = new Poisson[10];
+        for(int i = 0; i < 10; i++) {
+            this.poissons[i] = new Poisson(new Point(i*30, i*30));
+        }
     }
 
     /**
@@ -61,6 +67,13 @@ public class Ocean {
             int y1 = g.nextInt(haut - 10) +10;
             int y2 = g.nextInt(haut - 10) + 10;
             tabIceberg[i] = new Iceberg2D(new Point(x1, Math.min(y1, y2)), new Point(x2, Math.max(y1, y2)));
+        }
+
+        this.poissons = new Poisson[10];
+        for(int i = 0; i < 10; i++) {
+            double pois_x = g.nextInt(this.getWidth() - 10);
+            double pois_y = g.nextInt(this.getHeight() - 5);
+            this.poissons[i] = new Poisson(new Point(pois_x, pois_y));
         }
     }
 
@@ -127,20 +140,7 @@ public class Ocean {
                 colors[i][j] = 0;
             }
         }
-        //pour chaque iceberg :
-        /*for(int i = 0; i < this.getCount(); i++) {
-            int x_min = (int) this.getTabIceberg_ind(i).coinEnBasAGauche().getAbscisse();
-            int x_max = (int) this.getTabIceberg_ind(i).coinEnHautADroite().getAbscisse();
-            int y_min = (int) this.getTabIceberg_ind(i).coinEnBasAGauche().getOrdonnee();
-            int y_max = (int) this.getTabIceberg_ind(i).coinEnHautADroite().getOrdonnee();
-            //position entre les ordonnees min et max
-            for(int j = y_min ; j < y_max ; j++){
-                //position entre les abscisses min et max
-                for(int k = x_min; k < x_max; k++) {
-                    colors[k][j] = 1; //on met de la glace
-                }
-            }
-        }*/
+
         //pour chaque iceberg
         for(int i = 0; i < this.getCount(); i++) {
             //pour chaque ligne le long de la hauteur
@@ -164,7 +164,62 @@ public class Ocean {
                 colors[x][y] = 2;
             }
         }
+
+        //pour les poissons:
+        for(int k = 0; k<10; k++) {
+            if(!(this.poissons[k].isEaten())) {
+                for(int j = 0; j < this.poissons[k].getHeight(); j++) {
+                    for(int i = 0; i < this.poissons[k].getWidth(); i++) {
+                        int x = ((int) this.poissons[k].getPosition().getAbscisse()) + i;
+                        int y = ((int) this.poissons[k].getPosition().getOrdonnee()) + j;
+                        if(this.poissons[k].getDeplacement() == 1){
+                            colors[x][y] = 4;
+                        } else {
+                            colors[x][y] = 5;
+                        }
+                    }
+                }
+            }
+        }
+
         return colors;
+    }
+
+
+
+    public void deplacerPoissons(){
+        for(int k = 0; k<10; k++) {
+            if(this.poissons[k].getDeplacement() == 1 && this.poissons[k].getPosition().getAbscisse() >= this.largeur + this.poissons[k].getWidth()){
+                this.poissons[k].reset(this.largeur);
+            } else if(this.poissons[k].getDeplacement() == 0 && this.poissons[k].getPosition().getOrdonnee() >= this.hauteur + this.poissons[k].getHeight()) {
+                this.poissons[k].reset(this.hauteur);
+            } else {
+                this.poissons[k].deplacer();
+            }
+        }
+    }
+
+    public boolean pingouinTouchePoisson(int i) {
+            double pois_x_min, pois_x_max, pois_y_min, pois_y_max, ping_x_min, ping_x_max, ping_y_min, ping_y_max;
+            pois_x_min = this.poissons[i].getPosition().getAbscisse();
+            pois_x_max = this.poissons[i].getPosition().getAbscisse() + this.poissons[i].getWidth();
+            pois_y_min = this.poissons[i].getPosition().getOrdonnee();
+            pois_y_max = this.poissons[i].getPosition().getOrdonnee() +this.poissons[i].getHeight();
+
+            boolean b = (this.pingouin.appartientA(this.poissons[i].getPosition())
+                    || this.pingouin.appartientA(new Point(pois_x_max, pois_y_max))
+                    || this.pingouin.appartientA(new Point(pois_x_min, pois_y_max))
+                    || this.pingouin.appartientA(new Point(pois_x_max, pois_y_min)) );
+
+            return b;
+    }
+
+    public void pingouinMangePoisson() {
+        for(int i = 0; i<10; i++) {
+            if(this.pingouinTouchePoisson(i)) {
+                this.poissons[i].poissonMange();
+            }
+        }
     }
 
 

@@ -1,3 +1,0 @@
-Maya m = new Maya(6) ;
-int k ;
-k = m.getVal() ;

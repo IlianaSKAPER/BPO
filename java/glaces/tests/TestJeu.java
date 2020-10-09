@@ -9,43 +9,23 @@ import glaces.Jeu;
 
 public class TestJeu{
     public static void main(String[] args) {
-        //testJeu_auto();
-        //testJeu_param();
+        //testJeu_constructeur();
         //testGetOcean();
 
-        //Ocean oce = new Ocean(4, 500, 800);
-        //System.out.println(oce.toString());
-        //Jeu game = new Jeu(oce);
-        //Jeu game = new Jeu(new Ocean(4, 500, 800));
-        //Jeu game = new Jeu();
+        Jeu game = new Jeu();
+        game.jouer();
 
-        /*
-        System.out.println(game.getOcean().toString());
-        if(game != null) {
-            //game.jouer();
-        }
-        */
-
-        //jouer();
-
-        Jeu game = new Jeu('v');
-        game.jouer2();
     }
-/*
-    private static void testJeu_auto() {
+
+    private static void testJeu_constructeur() {
         Jeu j = new Jeu();
         assert(j != null): "bug declaration de Jeu sans param";
-    }*/
-    /*
-    private static void testJeu_param() {
-        Jeu j = new Jeu(new Ocean());
-        assert(j != null): "bug declaration de Jeu avec param Ocean";
-    }*/
-/*
+    }
+
     private static void testGetOcean() {
         Jeu j = new Jeu();
         Ocean oce = j.getOcean();
         assert(oce != null): "bug dans récup de Ocean (==null)";
-        assert(oce.getCount() == 4 && oce.getHeight() == 500 && oce.getWidth() == 700): "bug récupération ocean, mauvaise valeurs";
-    }*/
+        assert(oce.getCount() == 3 && oce.getHeight() == 500 && oce.getWidth() == 800): "bug récupération ocean, mauvaise valeurs";
+    }
 }
